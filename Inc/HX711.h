@@ -1,9 +1,10 @@
 #ifndef __HX711_H
 #define __HX711_H
 
-#include "main.h"
-
+// define boolean expressions because they don't exist in C
 typedef char bool;
+#define true 1
+#define false 0
 
 #define HX711_LIB_VERSION               (F("0.6.3"))
 
@@ -181,9 +182,9 @@ uint32_t hx711_last_time_read(struct hx711_device *device);
 
 
 //  PRICING
-float    hx711_get_price(struct hx711_device *device , uint8_t times/* = 1*/)  { return hx711_get_units(device , times) * device->_price; };
-void     hx711_set_unit_price(struct hx711_device *device , float price/* = 1.0*/) { device->_price = price; };
-float    hx711_get_unit_price(struct hx711_device *device) { return device->_price; };
+float    hx711_get_price(struct hx711_device *device , uint8_t times/* = 1*/);
+void     hx711_set_unit_price(struct hx711_device *device , float price/* = 1.0*/);
+float    hx711_get_unit_price(struct hx711_device *device);
 
 
 #endif // __HX711_H
