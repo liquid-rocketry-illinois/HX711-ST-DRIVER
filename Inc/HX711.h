@@ -1,10 +1,7 @@
 #ifndef __HX711_H
 #define __HX711_H
 
-// define boolean expressions because they don't exist in C
-typedef char bool;
-#define true 1
-#define false 0
+#include "main.h"
 
 #define HX711_LIB_VERSION               (F("0.6.3"))
 
@@ -37,7 +34,10 @@ struct hx711_device {
     uint32_t _lastTimeRead;
     uint8_t  _mode;
     bool     _fastProcessor;
-    uint8_t  _ratePin;
+    
+    GPIO_TypeDef *_rate_GPIO_port;
+    uint16_t  _rate_GPIO_pin;
+
     uint8_t  _rate;
     float    _price;
 };
@@ -59,10 +59,6 @@ bool wait_ready_retry(struct hx711_device *device , uint8_t retries, uint32_t ms
 #define HX711_DEFAULT_WAIT_TIMEOUT  1000
   //  max timeout
 bool wait_ready_timeout(struct hx711_device *device , uint32_t timeout, uint32_t ms);
-
-
-
-
 
 ///////////////////////////////////////////////////////////////
 //
@@ -134,7 +130,7 @@ uint8_t  hx711_get_gain(struct hx711_device *device);
 //  call tare to calibrate zero
 void     hx711_tare(struct hx711_device *device , uint8_t times/* = 10*/);
 float    hx711_get_tare(struct hx711_device *device);
-bool     hx711_tare_set(struct hx711_device *device);
+bool     hx711_is_tare_set(struct hx711_device *device);
 
 
 ///////////////////////////////////////////////////////////////
@@ -171,7 +167,7 @@ void     hx711_power_up(struct hx711_device *device);
 //  EXPERIMENTAL
 //  RATE PIN - works only if rate pin is exposed.
 //
-void     hx711_set_rate_pin(struct hx711_device *device , uint8_t pin);
+void     hx711_set_rate_pin(struct hx711_device *device , GPIO_TypeDef *rate_port , uint16_t rate_pin);
 void     hx711_set_rate_10SPS(struct hx711_device *device);
 void     hx711_set_rate_80SPS(struct hx711_device *device);
 uint8_t  hx711_get_rate(struct hx711_device *device);
@@ -185,6 +181,5 @@ uint32_t hx711_last_time_read(struct hx711_device *device);
 float    hx711_get_price(struct hx711_device *device , uint8_t times/* = 1*/);
 void     hx711_set_unit_price(struct hx711_device *device , float price/* = 1.0*/);
 float    hx711_get_unit_price(struct hx711_device *device);
-
 
 #endif // __HX711_H
