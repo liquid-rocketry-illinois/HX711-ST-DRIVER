@@ -8,7 +8,13 @@
 #define STM32H753xx
 
 #include "HX711.h"
-#include "dwt.h"
+
+extern TIM_HandleTypeDef htim1;
+
+void TIM_delay_us(TIM_HandleTypeDef *htim , uint16_t us) {
+    htim->Instance->CNT = 0;
+    while(htim->Instance->CNT < us) { }
+}
 
 //  MSB_FIRST optimized shiftIn
 //  see datasheet page 5 for timing
@@ -27,7 +33,7 @@ static uint8_t hx711_shiftIn(struct hx711_device *device)
     {
         HAL_GPIO_WritePin(clk_port , clk_pin , GPIO_PIN_SET);
         //  T2  >= 0.2 us
-        if(device->_fastProcessor) DWT_delay_us(1); // To-do : implement delayMicroseconds
+        if(device->_fastProcessor) TIM_delay_us(&htim1 , 1); // To-do : implement delayMicroseconds
         if (HAL_GPIO_ReadPin(data_port , data_pin) == GPIO_PIN_SET)
         {
             value |= mask;
@@ -35,7 +41,7 @@ static uint8_t hx711_shiftIn(struct hx711_device *device)
 
         HAL_GPIO_WritePin(clk_port , clk_pin , GPIO_PIN_RESET);
         //  keep duty cycle ~50%
-        if(device->_fastProcessor) DWT_delay_us(1);
+        if(device->_fastProcessor) TIM_delay_us(&htim1 , 1);
         mask >>= 1;
     }
     return value;
@@ -171,7 +177,7 @@ bool wait_ready_timeout(struct hx711_device *device , uint32_t timeout, uint32_t
 //     return (float)( (int32_t)value );
 // }
 float    hx711_read(struct hx711_device *device) {
-    while (device->_data_GPIO_pin == GPIO_PIN_SET) {
+    while (HAL_GPIO_ReadPin(device->_data_GPIO_port , device->_data_GPIO_pin) == GPIO_PIN_SET) {
         // to-do yield();
     }
     
@@ -214,10 +220,10 @@ float    hx711_read(struct hx711_device *device) {
     while (m > 0) {
         HAL_GPIO_WritePin(device->_clock_GPIO_port , device->_clock_GPIO_pin , GPIO_PIN_SET);
         //  T4  >= 0.2 us
-        if(device->_fastProcessor) DWT_delay_us(1);
+        if(device->_fastProcessor) TIM_delay_us(&htim1 , 1);
         HAL_GPIO_WritePin(device->_clock_GPIO_port , device->_clock_GPIO_pin , GPIO_PIN_RESET);
         //  keep duty cycle ~50%
-        if(device->_fastProcessor) DWT_delay_us(1);
+        if(device->_fastProcessor) TIM_delay_us(&htim1 , 1);
         m--;
     }
 
@@ -434,7 +440,7 @@ void     hx711_calibrate_scale(struct hx711_device *device , float weight, uint8
 //
 void     hx711_power_down(struct hx711_device *device) {
     HAL_GPIO_WritePin(device->_clock_GPIO_port , device->_clock_GPIO_pin , GPIO_PIN_SET);
-    DWT_delay_us(69);
+    TIM_delay_us(&htim1 , 69);
 }
 void     hx711_power_up(struct hx711_device *device) {
     HAL_GPIO_WritePin(device->_clock_GPIO_port , device->_clock_GPIO_pin , GPIO_PIN_RESET);
