@@ -6,6 +6,7 @@
 bool hx711_test();
 bool hx711_test_read();
 bool hx711_test_gain();
-bool hx711_test_scale();
+// bool hx711_test_scale();
+bool hx711_test_scale(struct hx711_device *device);
 bool compare_floats(float a, float b);
 #endif

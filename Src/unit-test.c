@@ -22,13 +22,36 @@ void hx711_test() {
 
 
 
-bool hx711_test_scale() {
-    DEVICE_INIT
-    if (hx711_set_scale(&device, 0) != false) {
+// bool hx711_test_scale() {
+//     DEVICE_INIT
+//     if (hx711_set_scale(&device, 0)) {
+//         return false;
+//     }
+//     hx711_set_scale(&device, 0.5);
+//     if (!compare_floats(hx711_get_scale(&device), 2 )) {
+//         return false;
+//     }
+//     hx711_set_scale(&device, -0.5);
+//     if (!compare_floats(hx711_get_scale(&device), -2)) {
+//         return false;
+//     }
+//     return true;
+    
+// }
+
+bool hx711_test_scale(struct hx711_device *device) {
+    if (hx711_set_scale(device, 0)) {
         return false;
     }
-    hx711_set_scale(&device, 0.5);
-    if (compare_floats(hx711_get_scale(&device), 0 )
+    hx711_set_scale(device, 0.5);
+    if (!compare_floats(hx711_get_scale(device), 2 )) {
+        return false;
+    }
+    hx711_set_scale(device, -0.5);
+    if (!compare_floats(hx711_get_scale(device), -2)) {
+        return false;
+    }
+    return true;
     
 }
 
@@ -59,9 +82,9 @@ bool hx711_test_offset() {
     return true;
 }
 
-bool hx711_test_tare() {
-    DEVICE_INIT
+// bool hx711_test_tare() {
+//     DEVICE_INIT
     
     
-    if(hx711_)
-}
+//     if(hx711_)
+// }

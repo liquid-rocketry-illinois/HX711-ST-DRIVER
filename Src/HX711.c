@@ -402,7 +402,6 @@ bool     hx711_is_tare_set(struct hx711_device *device) { return device->_offset
 //
 //  CALIBRATION
 //
-//  SCALE > 0
 //  returns false if scale == 0;
 bool     hx711_set_scale(struct hx711_device *device , float scale/* = 1.0*/) {
     if (scale == 0) return false;
