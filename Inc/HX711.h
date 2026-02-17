@@ -45,7 +45,6 @@ struct hx711_device {
 void hx711_init(struct hx711_device *device , 
     GPIO_TypeDef *data_port , uint16_t data_pin , 
     GPIO_TypeDef *clock_port , uint16_t clock_pin , 
-    bool fast_processor , 
     bool do_reset);
 void hx711_reset(struct hx711_device *device);
   // Check whether the device is ready. True if it's ready, false if not

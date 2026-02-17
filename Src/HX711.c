@@ -9,11 +9,13 @@
 
 #include "HX711.h"
 
+#include <stdio.h>
+
 extern TIM_HandleTypeDef htim1;
 
 void TIM_delay_us(TIM_HandleTypeDef *htim , uint16_t us) {
     htim->Instance->CNT = 0;
-    while(htim->Instance->CNT < us) { }
+    while(htim->Instance->CNT < us) { __NOP(); }
 }
 
 //  MSB_FIRST optimized shiftIn
@@ -85,10 +87,9 @@ static void init_device_struct(struct hx711_device *device) {
 void hx711_init(struct hx711_device *device , 
                 GPIO_TypeDef *data_port , uint16_t data_pin , 
                 GPIO_TypeDef *clock_port , uint16_t clock_pin , 
-                bool fast_processor , 
                 bool do_reset) {
     init_device_struct(device);
-    device->_fastProcessor = fast_processor;
+    device->_fastProcessor = true;
     
     device->_data_GPIO_port = data_port;
     device->_data_GPIO_pin  = data_pin;
