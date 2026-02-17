@@ -14,7 +14,7 @@ bool compare_floats(float a, float b) {
     struct hx711_device device;                               \
     hx711_init(&device, HX711_Data_GPIO_Port, HX711_Data_Pin, \
         HX711_Clock_GPIO_Port, HX711_Clock_Pin,               \
-        false, true);
+        true);
 
 void hx711_test() {
     
@@ -22,6 +22,7 @@ void hx711_test() {
 
 
 
+<<<<<<< Updated upstream
 // bool hx711_test_scale() {
 //     DEVICE_INIT
 //     if (hx711_set_scale(&device, 0)) {
@@ -52,6 +53,17 @@ bool hx711_test_scale(struct hx711_device *device) {
         return false;
     }
     return true;
+=======
+bool hx711_test_scale() {
+    DEVICE_INIT
+    if (hx711_set_scale(&device, 0) == true) {
+        return false;
+    }
+    hx711_set_scale(&device, 0.5);
+    // if (compare_floats(hx711_get_scale(&device), 0 )) {
+        // 
+    // }
+>>>>>>> Stashed changes
     
 }
 
@@ -86,5 +98,10 @@ bool hx711_test_offset() {
 //     DEVICE_INIT
     
     
+<<<<<<< Updated upstream
 //     if(hx711_)
 // }
+=======
+    // if(hx711_)
+}
+>>>>>>> Stashed changes
