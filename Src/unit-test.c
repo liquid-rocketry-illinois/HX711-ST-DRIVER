@@ -16,13 +16,17 @@ bool compare_floats(float a, float b) {
         HX711_Clock_GPIO_Port, HX711_Clock_Pin,               \
         true);
 
-void hx711_test() {
-    
+#define KNOWN_OBJECT_WEIGHT 100
+
+bool hx711_calibrate() {
+    DEVICE_INIT
+    hx711_wait_for_ready(&device);
+    hx711_tare(&device , 10);
+    hx711_calibrate_scale(&device , KNOWN_OBJECT_WEIGHT , 10);
+    return true;
 }
 
 
-
-<<<<<<< Updated upstream
 // bool hx711_test_scale() {
 //     DEVICE_INIT
 //     if (hx711_set_scale(&device, 0)) {
@@ -53,19 +57,8 @@ bool hx711_test_scale(struct hx711_device *device) {
         return false;
     }
     return true;
-=======
-bool hx711_test_scale() {
-    DEVICE_INIT
-    if (hx711_set_scale(&device, 0) == true) {
-        return false;
-    }
-    hx711_set_scale(&device, 0.5);
-    // if (compare_floats(hx711_get_scale(&device), 0 )) {
-        // 
-    // }
->>>>>>> Stashed changes
-    
 }
+
 
 #define TEST_GAIN(gain_val)                                                      \
     if(!(hx711_get_gain(&device) == gain_val)) {                                 \
@@ -93,15 +86,3 @@ bool hx711_test_offset() {
     }
     return true;
 }
-
-// bool hx711_test_tare() {
-//     DEVICE_INIT
-    
-    
-<<<<<<< Updated upstream
-//     if(hx711_)
-// }
-=======
-    // if(hx711_)
-}
->>>>>>> Stashed changes
