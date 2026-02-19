@@ -35,7 +35,7 @@ static uint8_t hx711_shiftIn(struct hx711_device *device)
     {
         HAL_GPIO_WritePin(clk_port , clk_pin , GPIO_PIN_SET);
         //  T2  >= 0.2 us
-        if(device->_fastProcessor) TIM_delay_us(&htim1 , 1); // To-do : implement delayMicroseconds
+        if(device->_fastProcessor) TIM_delay_us(&htim1 , 1);
         if (HAL_GPIO_ReadPin(data_port , data_pin) == GPIO_PIN_SET)
         {
             value |= mask;
@@ -113,12 +113,14 @@ void hx711_reset(struct hx711_device *device) {
 bool hx711_is_ready(struct hx711_device *device) {
     return (HAL_GPIO_ReadPin(device->_data_GPIO_port , device->_data_GPIO_pin) == GPIO_PIN_RESET);
 }
-  // Wait for the device to be ready for given ms
+
+#define WAIT_FOR_READY_MS 1
+  // Wait for the device to be ready
   // To-do : Yield to other processor when reading + Add MutEx
-void hx711_wait_for_ready(struct hx711_device *device , uint32_t ms) {
+void hx711_wait_for_ready(struct hx711_device *device) {
     // mutex_lock(device->mutex);
     while(!hx711_is_ready(device)) {
-        HAL_Delay(ms);  // delay_schedule(ms); something like that
+        HAL_Delay(WAIT_FOR_READY_MS);  // delay_schedule(ms); something like that
     }
     // mutex_unlock(device->mutex);
 }
@@ -177,8 +179,15 @@ bool wait_ready_timeout(struct hx711_device *device , uint32_t timeout, uint32_t
 //     device->_lastTimeRead = HAL_GetTick();
 //     return (float)( (int32_t)value );
 // }
+
+#define TIMEOUT 500
+
 float    hx711_read(struct hx711_device *device) {
-    while (HAL_GPIO_ReadPin(device->_data_GPIO_port , device->_data_GPIO_pin) == GPIO_PIN_SET) {
+    if(!device->_power_on) return HX711_SENSOR_READ_INVALID;
+
+    uint32_t tick = HAL_GetTick();
+    while ((HAL_GPIO_ReadPin(device->_data_GPIO_port , device->_data_GPIO_pin) == GPIO_PIN_SET)
+        && (HAL_GetTick()-tick < TIMEOUT)) {
         // to-do yield();
     }
     
@@ -196,7 +205,8 @@ float    hx711_read(struct hx711_device *device) {
     data.bytes[2] = hx711_shiftIn(device);
     data.bytes[1] = hx711_shiftIn(device);
     data.bytes[0] = hx711_shiftIn(device);
-   
+    
+    
     //  TABLE 3 page 4 datasheet
     //
     //  CLOCK      CHANNEL      GAIN      m
@@ -441,9 +451,12 @@ void     hx711_calibrate_scale(struct hx711_device *device , float weight, uint8
 void     hx711_power_down(struct hx711_device *device) {
     HAL_GPIO_WritePin(device->_clock_GPIO_port , device->_clock_GPIO_pin , GPIO_PIN_SET);
     TIM_delay_us(&htim1 , 69);
+
+    device->_power_on = false;
 }
 void     hx711_power_up(struct hx711_device *device) {
     HAL_GPIO_WritePin(device->_clock_GPIO_port , device->_clock_GPIO_pin , GPIO_PIN_RESET);
+    device->_power_on = true;
 }
 
 
