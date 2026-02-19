@@ -21,6 +21,8 @@
 #define HX711_CHANNEL_A_GAIN_64  64
 #define HX711_CHANNEL_B_GAIN_32  32
 
+#define HX711_SENSOR_READ_INVALID 0xfffffffffffff
+
 struct hx711_device {
     GPIO_TypeDef *_data_GPIO_port;
     uint16_t _data_GPIO_pin;
@@ -40,6 +42,8 @@ struct hx711_device {
 
     uint8_t  _rate;
     float    _price;
+    
+    bool _power_on;
 };
 
 void hx711_init(struct hx711_device *device , 
@@ -49,8 +53,8 @@ void hx711_init(struct hx711_device *device ,
 void hx711_reset(struct hx711_device *device);
   // Check whether the device is ready. True if it's ready, false if not
 bool hx711_is_ready(struct hx711_device *device);
-  // Wait for the device to be ready for given ms
-void hx711_wait_for_ready(struct hx711_device *device , uint32_t ms);
+  // Wait for the device to be ready
+void hx711_wait_for_ready(struct hx711_device *device);
 
 #define HX711_DEFAULT_WAIT_RETRY_NUM 3
   //  max # retries
